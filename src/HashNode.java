@@ -1,18 +1,18 @@
-public class FirstHashNode {    
-    FirstHashNode next;
-    FirstHashNode prev;
+public class HashNode {    
+    HashNode next;
+    HashNode prev;
     String data;
     public Object key;
     
     /* Constructor */
-    public FirstHashNode(String val) {
+    public HashNode(String val) {
         data = val;
         next = null;
         prev = null;
     }
 /*
     public String displayList() {
-        FirstChainingListNode current = head;
+        ChainingListNode current = head;
 		if(current!=null){
 		String output=current.display();
 		while (current != null) {
