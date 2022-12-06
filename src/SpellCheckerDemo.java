@@ -2,27 +2,27 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
-public class FirstSpellCheckerDemo {
+public class SpellCheckerDemo {
     //private static Object dictionary;
     private static boolean suggestWord;
 
     public static void main(String[] args) throws IOException {
         String dictionaryFileName = "words.txt"; // Dictionary file name 
 
-        FirstChainingSpellChecker.getNumOfItemsInFile(dictionaryFileName);
-        int numWords = FirstChainingSpellChecker.getNumOfItemsInFile(dictionaryFileName);
+        ChainingSpellChecker.getNumOfItemsInFile(dictionaryFileName);
+        int numWords = ChainingSpellChecker.getNumOfItemsInFile(dictionaryFileName);
         System.out.println(
             "Number of words in " + dictionaryFileName + " is " + numWords
             );
         int tableSize = numWords;
         tableSize *= 2;
         // Check if maxSize isPrime
-        if (!FirstChainingSpellChecker.isPrime(tableSize)) {
-            tableSize = FirstChainingSpellChecker.nextPrime( tableSize );
+        if (!ChainingSpellChecker.isPrime(tableSize)) {
+            tableSize = ChainingSpellChecker.nextPrime( tableSize );
         }
 
         Scanner sc = new Scanner(new File(dictionaryFileName));
-		FirstChainingSpellChecker hashTable = new FirstChainingSpellChecker(tableSize);
+		ChainingSpellChecker hashTable = new ChainingSpellChecker(tableSize);
 		
 		while(sc.hasNext()){
 			String s = sc.nextLine();
