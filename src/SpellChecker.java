@@ -2,17 +2,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class FirstChainingSpellChecker {
-    private FirstHashNode[] table;
+public class SpellChecker {
+    private HashNode[] table;
     private int size ;
     private static int tableSize;
     private static int numItemsInFile;
     private boolean containsKey = false;
  
     /* Constructor */
-    public FirstChainingSpellChecker(int tableSize)
+    public SpellChecker(int tableSize)
     {
-        this.table = new FirstHashNode[ nextPrime(tableSize) ];
+        this.table = new HashNode[ nextPrime(tableSize) ];
         this.size = 0;
     }
 
@@ -60,7 +60,7 @@ public class FirstChainingSpellChecker {
     public void makeEmpty()
     {
         int l = table.length;
-        table = new FirstHashNode[l];
+        table = new HashNode[l];
         size = 0;
     }
     /* Function to get size */
@@ -73,8 +73,8 @@ public class FirstChainingSpellChecker {
     {
         size++;
         int pos = myhash(val);        
-        FirstHashNode nptr = new FirstHashNode(val);
-        FirstHashNode start = table[pos];                
+        HashNode nptr = new HashNode(val);
+        HashNode start = table[pos];                
         if (table[pos] == null)
             table[pos] = nptr;            
         else
