@@ -227,19 +227,19 @@ public class SpellChecker {
         containsKey = false;
         int bucket = myhash(key); // In what location should the key be?
 
-        HashNode list = table[bucket]; // For traversing the list.
-        while (list != null) {
+        HashNode data = table[bucket]; // For traversing the list.
+        while (data != null) {
             // If we find the key in this node, return true.
-            if (list.key.equals(key)) {
+            if (HashNode.data.equals(key)) {
                 return true;
-            }
-
-            list = list.next;
+            } else {
+                return false;
+            }            
         }
-
         // If we get to this point, we don't know that the key does not exist
         // in the table
-        return false;
+        //data = data.next;
+        return containsKey;
     }
    
 
