@@ -1,3 +1,25 @@
+/**
+ * A java class to define a spell checking class using a hash table.
+ * The program will: read a set of words W, from a words.txt file
+ * and store them in a hash table; implement a spellCheck function
+ * that performs a spell check on a string s, entered by user at the
+ * console, using the words in the hash table as the dictionary. Return
+ * an iterable collection of correctly spelled words, or if not in the
+ * hash table, return a list of words in W that could be a correct
+ * spelling of s. The program will also handle all the ways that s might
+ * be a mispelling of a word in W, including swapping adjacent characters,
+ * inserting a single character between two adjacent characters, omitting
+ * a single character, replacing a character with another character, and
+ * possibly phonetic substitutions.
+ * 
+ * Author Emmanuel Agbakpe
+ * Course COSC 2436
+ * Assignment Project 2 Part I
+ * Instructor Professor Steve Johnson
+ * Due Date December 10, 2022
+ */
+
+
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
