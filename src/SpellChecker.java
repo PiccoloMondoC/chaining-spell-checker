@@ -90,8 +90,8 @@ public class SpellChecker {
         try
         {
             int pos = myhash(val);    
-            FirstHashNode start = table[pos];
-            FirstHashNode end = start;
+            HashNode start = table[pos];
+            HashNode end = start;
             if (start.data == val)
             {
                 size--;
@@ -167,7 +167,7 @@ public class SpellChecker {
         {
             System.out.print ("Bucket " + i + ":  ");            
  
-            FirstHashNode start = table[i];
+            HashNode start = table[i];
             while(start != null)
             {
                 System.out.print(start.data +" ");
@@ -206,7 +206,7 @@ public class SpellChecker {
         containsKey = false;
         int bucket = myhash(key); // In what location should the key be?
 
-        FirstHashNode list = table[bucket]; // For traversing the list.
+        HashNode list = table[bucket]; // For traversing the list.
         while (list != null) {
             // If we find the key in this node, return true.
             if (list.key.equals(key)) {
