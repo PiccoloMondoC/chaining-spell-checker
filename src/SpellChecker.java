@@ -2,8 +2,8 @@
  * A java class to define a spell checking class using a hash table.
  * The program will: read a set of words W, from a words.txt file
  * and store them in a hash table; implement a spellCheck function
- * that performs a spell check on a string s, entered by user at the
- * console, using the words in the hash table as the dictionary. Return
+ * that performs a spell check on a string s, from demo.txt file,
+ * using the words in the hash table as the dictionary. Return
  * an iterable collection of correctly spelled words, or if not in the
  * hash table, return a list of words in W that could be a correct
  * spelling of s. The program will also handle all the ways that s might
@@ -17,242 +17,214 @@
  * Assignment Project 2 Part I
  * Instructor Professor Steve Johnson
  * Due Date December 10, 2022
+ * 
+ * 
+ * Data Files
+ * ========== 
+ * dictionary => words.txt
+ * words/sentence to check => demo.txt
+ * 
+ * User can replace these files with new files with the same name.
+ * 
+ * 
+ * Code
+ * ====
+ * SpellChecker.java
+ * SpellCheckerDemo.java
+ * 
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Scanner;
+ // Import java classes
+import java.io.*;
+import java.util.*;
 
+// Class declaration
 public class SpellChecker {
-    private HashNode[] table;
-    private int size ;
-    private static int tableSize;
-    private static int numItemsInFile;
-    private boolean containsKey = false;
- 
-    /* Constructor */
-    public SpellChecker(int tableSize)
-    {
-        this.table = new HashNode[ nextPrime(tableSize) ];
-        this.size = 0;
-    }
-
-    /** Accessor function to get max size of hash table */
-    public static int getTableSize() {
-        return tableSize;
-    }
+    
+    private Set<String> dictionary = new HashSet<>(); // To hold words
+    private String dictionaryFileName; // Full path of the words file
+    private String userFile; // Full path of the user input file to check
+    private List<String> correctWords; // Words spelled correctly
+    private List<String> inCorrectWords; // Misspelled words
+    
+    // No argument constructor
+    public SpellChecker(){}
 
     /**
-     * Accessor function to get number of items in the file
-     * @return the number of items in the numItemsInFile field
+     * The getDictionaryFileName method returns the value stroed
+     * in the dictionaryFileName
+     * @return the value stored in the dictionaryFileName field.
+     */    
+    public String getDictionaryFileName() {
+        return dictionaryFileName;
+    }
+
+
+    /**
+     * Mutator function to set the full path of the words dictionbary file.
+     * @param fileName The full path of the dictionary words file
      */
-    public static int getNumOfItemsInFile() {
-        return numItemsInFile;
+    public void setDictionaryFileName(String fileName) {
+        File dictionaryFileName = new File(fileName);
+        
+        try{
+            try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+                String currentLine = reader.readLine();
+                
+                while(currentLine!=null){
+                    // Remove punctuation and split words by blank space
+                    String linePunctuationRemoved = currentLine.replaceAll("[^a-zA-Z]", "").toLowerCase();
+                    String [] wordsOnLine = linePunctuationRemoved.split("\\s+");
+                    
+                    //adds each word from dictionary file to dictionary set
+                    for(String eachWord : wordsOnLine){
+                        dictionary.add(eachWord);
+                    }
+                    
+                    currentLine = reader.readLine();
+                }
+            }
+        }
+        
+        catch(Exception excep){
+            excep.printStackTrace();
+        }
     }
 
 
-    /** Mutator function to setTableSize() 
-     * @throws IOException
+    /**
+     * The getCorrectWords method returns the list of all the
+     * correct words in the correctWords field
+     * @return the list of correct words in the correctWords field.
      */
-    public static void setTableSize() throws IOException {
-        tableSize = getNumOfItemsInFile(null);
-
-        /* 
-         * The number of buckets of the hash table should be about
-         * twice the number of words in the dictionary 
-         */
-        tableSize *= 2;
-
-        // Check if tableSize isPrime
-        if (!isPrime(tableSize)) {
-            tableSize = nextPrime( tableSize );
-        }
+    public List<String> getCorrectWords() {
+        return correctWords;
     }
 
-
-
-
-    /* Function to check if hash table is empty */
-    public boolean isEmpty()
-    {
-        return size == 0;
-    }
-    /* Function to clear hash table */
-    public void makeEmpty()
-    {
-        int l = table.length;
-        table = new HashNode[l];
-        size = 0;
-    }
-    /* Function to get size */
-    public int getSize()
-    {
-        return size;
-    }
-    /* Function to insert an element */
-    public void insert(String val)
-    {
-        size++;
-        int pos = myhash(val);        
-        HashNode nptr = new HashNode(val);
-        HashNode start = table[pos];                
-        if (table[pos] == null)
-            table[pos] = nptr;            
-        else
-        {
-            nptr.next = start;
-            start.prev = nptr;
-            table[pos] = nptr;
-        }    
-    }
-    /* Function to remove an element */
-    public void remove(String val)
-    {
-        try
-        {
-            int pos = myhash(val);    
-            HashNode start = table[pos];
-            HashNode end = start;
-            if (start.data == val)
-            {
-                size--;
-                if (start.next == null)
-                {
-                    table[pos] = null;
-                    return;
-                }                
-                start = start.next;
-                start.prev = null;
-                table[pos] = start;
-                return;
-            }
  
-            while (end.next != null && end.next.data != val)
-                end = end.next;
-            if (end.next == null)
-            {
-                System.out.println("\nElement not found\n");
-                return;
-            }
-            size--;
-            if (end.next.next == null)
-            {
-                end.next = null;
-                return;
-            }
-            end.next.next.prev = end;
-            end.next = end.next.next;
- 
-            table[pos] = start;
-        }
-        catch (Exception e)
-        {
-            System.out.println("\nElement not found\n");
-        }
-    }
-    /* Function myhash */
-    private int myhash(String key )
-    {
-        int hashVal = key.hashCode( );
-        hashVal %= table.length;
-        if (hashVal < 0)
-            hashVal += table.length;
-        return hashVal;
-    }
-    /* Function to generate next prime number >= n */
-    static int nextPrime( int n )
-    {
-        if (n % 2 == 0)
-            n++;
-        for ( ; !isPrime( n ); n += 2);
- 
-        return n;
-    }
-    /* Function to check if given number is prime */
-    static boolean isPrime( int n )
-    {
-        if (n == 2 || n == 3)
-            return true;
-        if (n == 1 || n % 2 == 0)
-            return false;
-        for (int i = 3; i * i <= n; i += 2)
-            if (n % i == 0)
-                return false;
-        return true;
-    }
-    /* Function to print hash table */
-    public void printHashTable ()
-    {
-        System.out.println();
-        for (int i = 0; i < table.length; i++)
-        {
-            System.out.print ("Bucket " + i + ":  ");            
- 
-            HashNode start = table[i];
-            while(start != null)
-            {
-                System.out.print(start.data +" ");
-                start = start.next;
-            }
-            System.out.println();
-        }
-    }
-
-    public static int getNumOfItemsInFile(String filename) throws IOException {
-        // Declare a variable
-        int numItemsInFile = 0;
-
-        // Define the filename
-        File file = new File(filename);
-
-        // Create an object for the Scanner class
-        Scanner myfile = new Scanner(file);
-
-        // Read the file
-        while(myfile.hasNext()) {
-            // Read the file
-            myfile.nextLine();
-            // Increment the total
-            numItemsInFile++;
-        }
-        // Close the file
-        myfile.close();
-        return numItemsInFile;
-
-        // Return the value
-        //return items;
-    }
-
-    public boolean containsKey(String key) {
-        containsKey = false;
-        int bucket = myhash(key); // In what location should the key be?
-
-        HashNode data = table[bucket]; // For traversing the list.
-        while (data != null) {
-            // If we find the key in this node, return true.
-            if (HashNode.data.equals(key)) {
-                return true;
-            } else {
-                return false;
-            }            
-        }
-        // If we get to this point, we don't know that the key does not exist
-        // in the table
-        //data = data.next;
-        return containsKey;
-    }
-   
-
     
+    /**
+     * The setInCorrectWords method finds words in input file that are
+     * not in the dictionary, adds them to the incorrectWords list, and
+     * creates a list of suggestions for each.
+     * @param userFileName
+     */
+    public List<String> setIncorrectWords(String userFileName){
+        File userFile = new File(userFileName);
+        
+        // List of all misspelled words
+        List<String> incorrectWords = new ArrayList<>();
 
-    
+        // List of all correctly spelled words
+        correctWords = new ArrayList<>();
+        
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(userFileName));
+            String currentLine = reader.readLine();
+            
+            while(currentLine!=null){
+                if(!currentLine.equals("")){
+                    String [] wordsOnLine = currentLine.split("\\s+");
+                    
+                    for(String curWord : wordsOnLine){
+                        
+                        // Removes punctuation of word
+                        String wordPunctuationRemoved = curWord.replaceAll("[^a-zA-Z]", "").toLowerCase();
+                        
+                        // If not in dictionary, it is added to misspelled words list
+                        if(false == dictionary.contains(wordPunctuationRemoved)){
+                            incorrectWords.add(wordPunctuationRemoved);
+                        } else {
+                            correctWords.add(wordPunctuationRemoved);
+                        }
+                    }
+                }
+                
+                currentLine = reader.readLine();
+            }
+        }
+        
+        catch(Exception excep){
+            excep.printStackTrace();
+        }
+        
+        // Returns a list of all misspelled words
+        return incorrectWords;
+    }
 
 
-    
-/*
-    public void displayTable() {
-        for (int j = 0; j < table.length; j++)
-			if(table[j]!=null)
-			System.out.println(table[j].displayList());
-    }  */
+    /**
+     * The getSuggestions creates a set of set of suggested words
+     * for each misspelled word.
+     * @return The set of words in the suggestionSet field
+     */    
+    public Set<String> getSuggestions(String word){
+        Set<String> suggestionSet = new HashSet<>(); //set of all suggested words
+        
+        String potentialWord = "";
+        
+        // Loop to remove a character
+        for(int i=0; i<word.length(); i++){
+            potentialWord = word.toLowerCase().substring(0,i) + word.toLowerCase().substring(i+1,word.length());
+            
+            // If word with removed character is in dictionary, add it to suggested
+            if(dictionary.contains(potentialWord)){
+                
+                suggestionSet.add(potentialWord);
+            }
+        }
+        
+        // Test for adding a character
+        
+        char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+        
+        for(int i=0; i<word.length(); i++) {
+
+            for(char charac : alphabet) {
+                
+                potentialWord = word.toLowerCase().substring(0,i) + charac + word.toLowerCase().substring(i,word.length());
+                
+                // If word with added character is in dictionary, add it to suggested
+                if(dictionary.contains(potentialWord)){
+                    
+                    suggestionSet.add(potentialWord);
+                }
+                
+                // Addresses the special case of adding letter at the end of the word
+                if(i==word.length()-1){
+                    
+                    potentialWord = word + charac;
+                    
+                    if(dictionary.contains(potentialWord)){
+                        suggestionSet.add(potentialWord);
+                    }
+                }
+            }
+        }
+        
+        // Test for swapping characters        
+        for(int i=1; i<word.length(); i++){
+            
+            // If at any index other than the last
+            if(i!=word.length()-1){
+                
+                // Swaps two adjacent characters in word
+                potentialWord = word.toLowerCase().substring(0,i-1) +word.toLowerCase().substring(i,i+1) + word.toLowerCase().substring(i-1,i) + word.toLowerCase().substring(i+1,word.length());
+            }
+            
+            // Addresses special case of last index
+            else{
+                
+                potentialWord = word.toLowerCase().substring(0,i-1) +word.toLowerCase().substring(i,i+1) + word.toLowerCase().substring(i-1,i);
+            }
+            
+            // If word with swapped characters is in dictionary, add it to suggested
+            if(dictionary.contains(potentialWord)){
+                suggestionSet.add(potentialWord);
+            }
+        }
+        
+        // Returns the suggested set of words for each misspelled word
+        return suggestionSet;
+    }
 }
